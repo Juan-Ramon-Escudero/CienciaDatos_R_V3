@@ -1,0 +1,231 @@
+---
+title: "Ejercicio TITANIC de la página DATACAMP"
+author: "Juan Ramón Escudero Núñez"
+date: '*julio de 2022*'
+output:
+  html_notebook:
+    toc: yes
+  html_document:
+    toc: yes
+    df_print: paged
+lang: es-ES
+---
+### Establecer subdirectorio de trabajo
+```{r}
+#getwd()
+#setwd("C:/Ciencia_Datos_R/Titanic") 
+
+# Decidí dejarlo en el subdirectorio original del ejercicio
+#setwd("C:/Ciencia_Datos_R/Ejercicio_Tidyverse")
+
+#dir()
+```
+
+
+### Cargar la librería de **Tidyverse**
+```{r}
+library(tidyverse)
+
+```
+
+Importar la información (*DATA*) y asignar un nombren(passengers) para trabajar en una copia de la base de datos original
+```{r}
+passengers <- read_csv("Titanic/train.csv")
+
+# Llamando la información (base de datos) para inspección
+passengers
+```
+
+Para ver la información con *SUMMARY*
+```{r}
+summary(passengers)
+```
+
+Para ver la información con *SUMMARY* usando un *PIPE* %>%
+```{r}
+passengers %>%
+  summary()
+  
+```
+
+Haciendo lo mismo, pero ahora eliminando las observaciones que tienen valores perdidos *na* en la variable *AGE*
+```{r}
+passengers %>%
+  drop_na() %>%
+  summary()
+```
+
+
+### La información de la base de datos usando verbos de *dplyr* como *filter(), arrange() y mutate()*
+
+"Filtrar" con *filter* selecciona unicamente las observaciones que concuerdan con la condición
+```{r}
+# filtrar para obtener los renglones que correspondan a hombres *male*
+
+passengers %>%
+  filter(Sex == "male")
+  
+```
+
+```{r}
+# Para filtrar mujeres *female*
+passengers %>%
+  filter(Sex == "female")
+
+```
+
+Usar *ARRANGE* para ordenar la información por el pago realizado de la tarifa *Fare*, se puede utilizar para detectar algún patrón
+```{r}
+passengers %>%
+  arrange(Fare)
+```
+
+También se puede ordenar en forma decreciente *desc*
+```{r}
+passengers %>%
+  arrange(desc(Fare))
+```
+
+
+Crear nuevas variables con *MUTATE*
+```{r}
+#crear nueva columna FamSize
+passengers %>%
+  mutate(FamSize = SibSp + Parch)
+```
+
+*MUTATE* se puede usar para crear una nueva columna (variable), pero también para modificar las columnas existentes
+```{r}
+passengers %>%
+  mutate(FamSize = SibSp + Parch) %>%
+  arrange(desc(FamSize))
+```
+
+
+En el siguiente código, agrege nuevas lineas para adicionar la variable *FamSize* a la nueva base de datos *passengers_new* y la acomodé de manera descendente por numero de miembros de la familia
+```{r}
+# Código agregado al del tutorial
+passengers_new %>%
+  mutate(FamSize = SibSp + Parch) %>%
+    arrange(desc(FamSize))
+View(passengers_new)
+```
+
+
+Cambiar valores numericos a texto, por ejemplo, la variable *Survived* tiene valores de 0,1 que representan No y Yes, a fin de que tenga una lectura más sencilla, se pueden cambiar los 0,1 a No y Yes con *ifelse*.
+
+Primero agregue la variable FamSize ordenada de mayor a menor, para ver su comportamiento. Ahora *passenger_new* tiene 13 variables
+```{r}
+passengers_new <- passengers %>%
+  mutate(FamSize = SibSp + Parch) %>%
+    arrange(desc(FamSize)) %>%
+  mutate(Survived = ifelse(Survived == 0, "No", "Yes"))
+
+passengers_new
+
+View(passengers_new)
+```
+
+
+
+###  Graficar con *ggplot*
+
+```{r}
+# Grafica de barras
+
+ggplot(passengers, aes(x = Sex)) +
+  geom_bar()
+
+```
+
+Scatter plot (gráfico de dispersión de puntos) de las variables *Age* vs *Fare*
+```{r}
+ ggplot(passengers, aes(x = Age, y = Fare))+
+  geom_point()
+
+```
+
+Se puede eliminar los valores perdidos *na* de manera manual con *drop_na*
+```{r}
+ ggplot(passengers %>% drop_na(), aes(x = Age, y = Fare))+
+  geom_point()
+
+```
+
+Graficar la variable *Sex* en color para distinguir si se presenta una correlacion entre *Sex*, *Age* y *Fare*
+```{r}
+# Gráfico de puntos de Age vs Fare por Sex
+
+ggplot(passengers %>% drop_na(), aes(x = Age, y =  Fare, color = Sex)) +
+  geom_point()
+```
+
+Graficar la variable *Sex* en color separando los valores *Yes*,*No* de *Survived* en una gráfica cada uno
+```{r}
+ggplot(passengers_new, aes(x = Age, y = Fare, color = Sex ))+
+  geom_point()+
+  facet_grid(~Survived)
+```
+
+
+Gráfico de barras por *Sex*, coloreado por *Survived*
+```{r}
+ggplot(passengers_new, aes(x = Sex, fill = Survived))+
+  geom_bar()
+```
+
+
+### *Summarizing* y *grouping* la información
+
+Usar *summarise* para encontrar la media *mean* de la tarifa *Fare*
+```{r}
+passengers %>%
+  summarise(meanFare = mean(Fare))
+
+```
+
+Usar *summarise* para encontrar la mediana *median* de la tarifa *Fare*
+```{r}
+passengers%>%
+  summarise(medFare = median(Fare))
+```
+
+Usar *filtrar* y *summarise* para encontrar la media de la tarifa *Fare* pagada por los hombres *male*
+```{r}
+passengers %>%
+  filter(Sex == "male") %>%
+  summarise(meanFare = mean(Fare))
+```
+
+Usar *filtrar* y *summarise* para encontrar la media de la tarifa *Fare* pagada por las mujeres *female*
+```{r}
+passengers %>%
+  filter(Sex == "female") %>%
+  summarise(meanFare = mean(Fare))
+```
+
+Usar *filtrar* y *summarise* para encontrar la media de la tarifa *Fare* pagada por las mujeres *female* y cuantas mujeres sobrevivieron
+```{r}
+passengers %>%
+  filter(Sex == "female") %>%
+  summarise(meanFare = mean(Fare),
+             numSuv = sum(Survived))
+```
+
+Usando *group_by* y *summarise* para encontrar la media de la tarifa *Fare* y el numero de sobrevivientes en función del género *Sex*
+```{r}
+passengers %>%
+  group_by(Sex) %>%
+  summarise(meanFare = mean(Fare),
+            numSurv = sum(Survived))
+```
+
+
+Usando *group_by* y *summarise* para encontrar la media de la tarifa *Fare* y la proporcion de sobrevivientes en función del género *Sex*
+```{r}
+passengers %>%
+  group_by(Sex) %>%
+  summarise(meanFare = mean(Fare),
+            propSurv = sum(Survived)/n())
+```
+
