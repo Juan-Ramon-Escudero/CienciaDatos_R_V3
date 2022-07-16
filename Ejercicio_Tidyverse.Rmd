@@ -13,7 +13,7 @@ lang: es-ES
 editor_options:
   chunk_output_type: inline
 ---
-### **Ejercicio**
+### **E j e r c i c i o**
 
 Para visualizar los datasets disponibles en R y buscar el dataset que se va a utilizar
 ```{r}
