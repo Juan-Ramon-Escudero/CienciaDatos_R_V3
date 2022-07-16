@@ -1,0 +1,168 @@
+---
+title: "Curso Ciencia de Datos con RStudio"
+subtitle: Ejercicio Tidyverse
+author: "Juan Ramón Escudero Núñez"
+date: "Julio de 2022"
+output:
+  html_notebook: null
+  toc: yes
+  toc_depth: 3
+  html_document:
+    df_print: paged
+lang: es-ES
+editor_options:
+  chunk_output_type: inline
+---
+### **Ejercicio**
+
+Para visualizar los datasets disponibles en R y buscar el dataset que se va a utilizar
+```{r}
+library(help = "datasets")
+```
+
+**Voy a usar el dataset de *airquality***
+
+Para ver el contenido del dataset
+```{r}
+View(airquality)
+```
+
+Para mostrar la estructura del dataset
+```{r}
+str(airquality)
+```
+
+Para ver el tipo de datos que contiene el dataset
+```{r}
+class(airquality)
+```
+
+
+### **Subsetting**
+
+#### Slicing
+```{r}
+# Para visualizar lo primeros 6 renglones
+head(airquality)
+```
+
+```{r}
+# Para visualizar lo últimos 6 renglones
+tail(airquality)
+```
+
+#### Slicing (1)
+```{r}
+# Para visualizar el reglón 10
+airquality[10,]
+```
+
+```{r}
+# Para visualizar el reglón 121
+airquality[121,] 
+```
+
+
+#### Slicing (2)
+```{r}
+# Para visualizar la columna 5 (mes)
+airquality[,5] 
+```
+
+```{r}
+# Para visualizar la columna 3 (wind)
+airquality[,3] 
+```
+
+
+#### Slicing (3 y 4)
+```{r}
+# Para visualizar del renglón 3 al 15 de la columna 4 (temp)
+airquality[3:15, 4]
+# Para visualizar del renglón 100 al 105 de la columna 1 (ozone)
+airquality[100:105, 1]
+```
+
+
+#### Slicing (5)
+```{r}
+# Para visualizar del renglón 1 al 10 de las columnas 3 y 4 (wind, Temp)
+airquality[1:10, c(3,4)] 
+```
+
+```{r}
+# Para visualizar del renglón 50 al 55 de las columnas 1, 2 y 5 (ozone, solarR, mes)
+airquality[50:55, c(1,2,5)]
+```
+
+
+#### Slicing (6)
+```{r}
+# Para visualizar todos los renglones de las columnas 3 y 4 (wind, Temp)
+airquality[, c(3,4)]
+```
+
+```{r}
+# Para visualizar todos los renglones de la columna 4 (Temp)
+airquality[, 4]
+```
+
+
+#### Slicing (7)
+```{r}
+# Para visualizar los renglones en donde la temperatura sea 79
+airquality[airquality$Temp == 79,]
+```
+
+```{r}
+# Para visualizar los renglones en donde la radiación solar y temperatura son altas
+airquality[airquality$Solar.R>200 & airquality$Temp>90,]
+```
+
+
+
+### **Slicing with subset()**
+```{r}
+# Duda: en los renglones 1:3, 8:10, etc no se cumplen las condiciones
+subset(x = airquality,
+       subset = Temp == 90 & Solar.R > 250 | Solar.R < 300,
+       select = c(Temp, Solar.R))
+```
+
+
+#### Slicing with subset()
+```{r}
+# Para visualizar los renglones de las variables de ozono y mes donde la temperatura sea 90 y radiación solar superior a 200
+subset(x = airquality,
+       subset = Temp == 90 & Solar.R > 200,
+       select = c(Ozone, Month))
+```
+
+
+
+### **Ejercicio del día 7 de julio de 2022**
+
+Nota: lo voy a continuar en otro archivo
+
+#### Instalar paquetería
+```{r}
+# Para instalar el paquete de *Tidyverse*
+#install.packages("tidyverse")
+```
+
+#### Instalar varias paqueterías al mismo tiempo
+```{r}
+# Para instalar varios paquetes
+#install.packages(c("tidyverse", "gapminder", "ggmap", "ggplot2"))
+```
+
+
+### Para cargar las distintas *Library* que se van a usar
+```{r}
+library(tidyverse)
+```
+
+```{r}
+#library(gapminder)
+```
+
