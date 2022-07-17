@@ -1,0 +1,170 @@
+---
+title: "Ejercicio con Información del Censo de Población y Vivienda, INEGI 2020"
+author: "Juan Ramón Escudero Núñez"
+date: '*julio de 2022*'
+output:
+  html_notebook:
+    toc: yes
+  html_document:
+    toc: yes
+    df_print: paged
+lang: es-ES
+---
+----------------
+Voy a utilizar información del Censo 2020 del INEGI, resultados para el Estado de Chihuahua.
+
+```{r}
+# Directorio setwd("C:/Ciencia_Datos_R/Ejercicio_Tidyverse")
+```
+
+### Cargar la librería de Tidyverse
+```{r}
+#install.packages("tidyverse")
+library(tidyverse)
+
+```
+
+### Importar la información
+Importar la información del Censo 2020 y asignar un nombre (censo) para trabajar en una copia de la base de datos original
+```{r}
+censo <- read_csv("INEGI/censo_chih.csv")
+
+# Llamando la información (base de datos) para inspección visual de los datos
+censo
+
+```
+```{r}
+head(censo)
+```
+
+### Para contar con una base de datos más manejable (para efectos del ejercicio), se eliminarán variables (columnas) y renglones para dejar solo la información con la que se desea trabajar
+```{r}
+# Para elimnar variables/columnas de la base de datos
+censo = censo[ ,-c(35:100)]
+View(censo)
+```
+
+
+
+```{r}
+head(censo)
+View(censo)
+```
+
+```{r}
+# Para filtrar el municipio de Juárez (037) y crear una nueva base de datos (censoCDJ)
+
+censoCDJ <- censo %>% filter(MUN == "037")
+```
+
+
+
+```{r}
+# Para filtrar la columna "Total AGEB urbana" que tiene los totales o la suma de los AGEB's que corresponden a cada localidad
+
+censoCDJ <- censoCDJ %>% filter(NOM_LOC == "Total AGEB urbana")
+
+```
+
+```{r}
+# Para ver un resumen de la base de datos censoCDJ creada
+
+censoCDJ %>%
+  summary()
+
+```
+
+```{r}
+# Para ver los nombres de las variables (columnas)
+
+names(censoCDJ)
+```
+
+Para verificar si me traje toda la información de la población total del municipio (1,512,450)
+No concuerdan los resultados por 5,000 habitantes, creo que corresponden a las LOC de Loma Blanca y otras. Lo checo después.
+```{r}
+
+pobCDJ = colSums(censoCDJ[ ,9])
+
+pobCDJ
+
+```
+
+```{r}
+# Para ver la estructura de la base de datos
+str(censoCDJ)
+
+```
+
+```{r}
+# No pude cambiar los * de la base de datos para cambiar el tipo de variable de chr a num
+# censoCDJx <- censoCDJ%>% mutate(POBFEM = ifelse(POBFEM == "*",))
+
+```
+
+
+
+### Tidyverse: Data wrangling con el paquete **dplyr** y uso de %>%
+
+Filter: 
+```{r}
+# Filtrar la información del municipio de Juárez (037)
+censo %>% filter(MUN == "037")
+```
+
+```{r}
+# Filtrar la información del municipio de Juárez que tenga mas de 3000 habitantes
+censo %>% filter(MUN == "037", POBTOT > 3000)
+```
+
+```{r}
+# Filtrar para obtener la población total del municipio de Juárez
+# Nota, se realizó sin eliminar renglones redundantes vgr. los reglones que indican que se trata de un Total
+
+censo %>% 
+  filter(MUN == "037", NOM_LOC == "Total AGEB urbana")
+```
+
+###Tidyverse: Arrange
+
+```{r}
+# Ordenar una tabla en función a una variable
+
+censo %>%
+  arrange(POBFEM)
+
+```
+
+
+```{r}
+# Ordenar una tabla en función a una variable en orden descendente
+
+censo %>%
+  arrange(desc(POBFEM))
+
+```
+
+```{r}
+# Filtrar y ordenar
+
+censo %>% 
+  filter(MUN == "037")%>%
+  arrange(desc(POBTOT))
+
+```
+
+
+### Tidyverse: Mutate
+
+```{r}
+# Usar mutate para cambiar una variable
+
+#censo %>% mutate(POBMAS = POBTOT - POBFEM)
+```
+
+
+
+
+
+
+
